@@ -12,6 +12,8 @@ import AreasMap from "./AreasMap";
 import MeasuresAPI from "./MeasuresAPI";
 import TeamAPI from "./TeamAPI";
 import VolunteerForm from "./VolunteerForm";
+import AboutMinisterio from "./AboutMinisterio";
+import AboutDev from "./AboutDev";
 
 const ContentSection = ({ section }) => {
   const token = localStorage.getItem("mmar_token");
@@ -22,25 +24,16 @@ const ContentSection = ({ section }) => {
 
   switch (section) {
     // Públicos
-    case "about":
-      view = (
-        <>
-          <h2 className="text-2xl font-bold text-env-dark mb-4">🏛️ Sobre Nosotros</h2>
-          <p className="text-gray-700">
-            El Ministerio de Medio Ambiente fue creado en el año 2000 para proteger los
-            recursos naturales de la República Dominicana.
-          </p>
-        </>
-      );
-      break;
-    case "services":     view = <ServicesAPI />; break;
-    case "news":         view = <NewsAPI />; break;
-    case "videos":       view = <VideosAPI />; break;
-    case "areas":        view = <AreasList />; break;
-    case "areas-map":    view = <AreasMap />; break;
-    case "measures":     view = <MeasuresAPI />; break;
-    case "team":         view = <TeamAPI />; break;
-    case "volunteer":    view = <VolunteerForm />; break;
+    case "about":       view = <AboutMinisterio />; break;  // 🏛️ Sobre el Ministerio
+    case "acerca":      view = <AboutDev />; break;         // ℹ️ Acerca del equipo
+    case "services":    view = <ServicesAPI />; break;
+    case "news":        view = <NewsAPI />; break;
+    case "videos":      view = <VideosAPI />; break;
+    case "areas":       view = <AreasList />; break;
+    case "areas-map":   view = <AreasMap />; break;
+    case "measures":    view = <MeasuresAPI />; break;
+    case "team":        view = <TeamAPI />; break;
+    case "volunteer":   view = <VolunteerForm />; break;
 
     // Privados
     case "regulations":     view = needAuth(<Regulations />); break;
@@ -59,7 +52,6 @@ const ContentSection = ({ section }) => {
       );
   }
 
-  // Wrapper mínimo (sin fondo/padding extra) + ancla para hacer scroll
   return (
     <section id="content" className="mt-6">
       {view}

@@ -1,23 +1,27 @@
-// src/components/MiniNav.jsx
+
 export default function MiniNav({ go, current, isLoggedIn }) {
   const pub = [
-    { key: "about",      label: "Sobre",      emoji: "🏛️" },
-    { key: "services",   label: "Servicios",  emoji: "🛠️" },
-    { key: "news",       label: "Noticias",   emoji: "📰" },
-    { key: "videos",     label: "Videos",     emoji: "🎥" },
-    { key: "areas",      label: "Áreas",      emoji: "🗺️" },
-    { key: "areas-map",  label: "Mapa Áreas", emoji: "🧭" },
-    { key: "measures",   label: "Medidas",    emoji: "🧩" },
-    { key: "team",       label: "Equipo",     emoji: "👥" },
-    { key: "volunteer",  label: "Voluntariado", emoji: "🤝" },
+    { key: "about", label: "Sobre", emoji: "🏛️" },
+    { key: "services", label: "Servicios", emoji: "🛠️" },
+    { key: "news", label: "Noticias", emoji: "📰" },
+    { key: "videos", label: "Videos", emoji: "🎥" },
+    { key: "areas", label: "Áreas", emoji: "🗺️" },
+    { key: "areas-map", label: "Mapa Áreas", emoji: "🧭" },
+    { key: "measures", label: "Medidas", emoji: "🧩" },
+    { key: "team", label: "Equipo", emoji: "👥" },
+    { key: "volunteer", label: "Voluntariado", emoji: "🤝" },
+
+    { key: "acerca", label: "Acerca", emoji: "ℹ️" },
+
   ];
 
   const priv = [
-    { key: "regulations",    label: "Normativas",   emoji: "📜" },
-    { key: "report-damage",  label: "Reportar",     emoji: "⚠️" },
-    { key: "my-reports",     label: "Mis Reportes", emoji: "📊" },
-    { key: "reports-map",    label: "Mapa Reportes",emoji: "🗺️" },
-    { key: "change-password",label: "Cambiar Clave",emoji: "🔐" },
+    { key: "regulations", label: "Normativas", emoji: "📜" },
+    { key: "report-damage", label: "Reportar", emoji: "⚠️" },
+    { key: "my-reports", label: "Mis Reportes", emoji: "📊" },
+    { key: "reports-map", label: "Mapa Reportes", emoji: "🗺️" },
+    { key: "change-password", label: "Cambiar Clave", emoji: "🔐" },
+
   ];
 
   const Chip = ({ k, label, emoji }) => {

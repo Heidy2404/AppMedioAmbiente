@@ -47,6 +47,11 @@ export default function NavigationGrid({ go }) {
         <div className="text-3xl mb-2">🤝</div>
         <div className="font-semibold">Voluntariado</div>
       </button>
+
+      <button onClick={() => go("acerca")} className="p-6 bg-white rounded-xl shadow hover:shadow-md border">
+        <div className="text-3xl mb-2">ℹ️</div>
+        <div className="font-semibold">Acerca de</div>
+      </button>
     </section>
   );
 }
