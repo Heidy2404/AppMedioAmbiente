@@ -1,9 +1,9 @@
 // src/components/DevTeam.jsx
 const MEMBERS = [
-  { name: "Heidy Javier",          matricula: "20220994",  phone: "8497201260", telegram: "https://t.me/HeidyJavier", photo: "/team/yo.jpg" },
-  { name: "Cristian Encarnacion",  matricula: "20230936",  phone: "", telegram: "", photo: "" },
+  { name: "Heidy Javier",          matricula: "2022-0994",  phone: "8497201260", telegram: "https://t.me/HeidyJavier", photo: "/team/yo.jpg" },
+  { name: "Cristian Encarnacion",  matricula: "2023-0936",  phone: "8293825764", telegram: "http://t.me/Cristiandevs", photo: "/team/cristian.jpg" },
   { name: "Luis Espinal",          matricula: "2023-1055", phone: "", telegram: "", photo: "" },
-  { name: "Adrian Lorenzo Torres", matricula: "2023-1033", phone: "", telegram: "", photo: "" },
+  { name: "Adrian Lorenzo Torres", matricula: "2023-1033", phone: "8295229115", telegram: "http://t.me/adrianel60", photo: "/team/adrian.jpg" },
   { name: "Rainiero Mendoza",      matricula: "2022-1079", phone: "8494528607", telegram: "http://t.me/Jesus117229", photo: "/team/rainiero.jpg" },
 ];
 
