@@ -38,91 +38,6 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [closeModal]);
 
-  // Función para limpiar todos los campos
-  const clearAllFields = () => {
-    // Login fields
-    setEmail("");
-    setPass("");
-    setShowPass(false);
-    
-    // Recover fields
-    setRecoverEmail("");
-    
-    // Reset with code fields
-    setResetCode("");
-    setResetEmail("");
-    setNewPassword("");
-    setConfirmPassword("");
-    setRecoveryCode("");
-    
-    // Register fields
-    setCedula("");
-    setNombre("");
-    setApellido("");
-    setCorreoReg("");
-    setPasswordReg("");
-    setTelefono("");
-    setMatricula("");
-    
-    // Messages
-    setError("");
-    setMsg("");
-  };
-
-  // Limpiar campos cuando se abre el modal
-  useEffect(() => {
-    if (visible) {
-      clearAllFields();
-      setMode("login"); // Siempre empezar en login
-    }
-  }, [visible]);
-
-  // Función para cambiar modo y limpiar campos relevantes
-  const changeMode = (newMode) => {
-    setError("");
-    setMsg("");
-    
-    if (newMode === "login") {
-      // Al volver a login, limpiar todo excepto login
-      setRecoverEmail("");
-      setResetCode("");
-      setResetEmail("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setRecoveryCode("");
-      setCedula("");
-      setNombre("");
-      setApellido("");
-      setCorreoReg("");
-      setPasswordReg("");
-      setTelefono("");
-      setMatricula("");
-    } else if (newMode === "recover") {
-      // Al ir a recover, limpiar solo campos de recover
-      setRecoverEmail("");
-      setRecoveryCode("");
-    } else if (newMode === "resetWithCode") {
-      // Al ir a reset, si no viene de recover, limpiar campos reset
-      if (mode !== "recover") {
-        setResetCode("");
-        setResetEmail("");
-        setNewPassword("");
-        setConfirmPassword("");
-      }
-    } else if (newMode === "register") {
-      // Al ir a register, limpiar campos de register
-      setCedula("");
-      setNombre("");
-      setApellido("");
-      setCorreoReg("");
-      setPasswordReg("");
-      setTelefono("");
-      setMatricula("");
-    }
-    
-    setMode(newMode);
-  };
-
   if (!visible) return null;
 
   const handleLogin = async (e) => {
@@ -133,12 +48,7 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
       localStorage.setItem("mmar_token", data.token || "");
       onSuccess?.(data.user || { email });
       setMsg("¡Sesión iniciada!");
-      
-      // Limpiar todos los campos al cerrar exitosamente
-      setTimeout(() => {
-        clearAllFields();
-        closeModal?.();
-      }, 1000);
+      closeModal?.();
     } catch (err) {
       setError("Credenciales inválidas o servicio no disponible.");
     } finally {
@@ -160,11 +70,12 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
         
         // Cambiar automáticamente al modo de reset con código
         setTimeout(() => {
-          changeMode("resetWithCode");
+          setMode("resetWithCode");
+          setMsg("");
         }, 2000);
       } else {
         setMsg("Si el correo existe, recibirás instrucciones.");
-        changeMode("login");
+        setMode("login");
       }
     } catch (err) {
       setError("No se pudo iniciar la recuperación.");
@@ -204,8 +115,12 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
       
       // Limpiar formularios y volver al login
       setTimeout(() => {
-        clearAllFields();
-        changeMode("login");
+        setMode("login");
+        setResetCode("");
+        setResetEmail("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setMsg("");
       }, 2000);
     } catch (err) {
       if (err.status === 400) {
@@ -238,12 +153,8 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
       localStorage.setItem("mmar_token", data.token || "");
       onSuccess?.(data.user || { email: correoReg.trim() });
       setMsg("Usuario registrado e ingresado ✅");
-      
-      // Limpiar todos los campos al cerrar exitosamente
-      setTimeout(() => {
-        clearAllFields();
-        closeModal?.();
-      }, 1500);
+      setMode("login");
+      closeModal?.();
     } catch (err) {
       setError("No se pudo registrar. Revisa los datos.");
     } finally {
@@ -273,8 +184,8 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
               </button>
             </form>
             <div className="flex justify-between items-center mt-3 text-sm">
-              <button className="text-emerald-700 underline" onClick={()=>changeMode("recover")}>¿Olvidaste tu contraseña?</button>
-              <button className="text-emerald-700 underline" onClick={()=>changeMode("register")}>Crear cuenta</button>
+              <button className="text-emerald-700 underline" onClick={()=>setMode("recover")}>¿Olvidaste tu contraseña?</button>
+              <button className="text-emerald-700 underline" onClick={()=>setMode("register")}>Crear cuenta</button>
             </div>
             <div className="text-right mt-2"><button className="text-sm" onClick={closeModal}>Cerrar</button></div>
           </>
@@ -317,7 +228,7 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
                 <button 
                   type="button" 
                   className="px-4 py-2 rounded border hover:bg-gray-50" 
-                  onClick={()=>changeMode("login")}
+                  onClick={()=>setMode("login")}
                 >
                   Volver
                 </button>
@@ -379,7 +290,7 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
                 <button 
                   type="button" 
                   className="px-4 py-2 rounded border hover:bg-gray-50" 
-                  onClick={()=>changeMode("recover")}
+                  onClick={()=>setMode("recover")}
                 >
                   Volver
                 </button>
@@ -408,7 +319,7 @@ export default function ModalLogin({ visible, closeModal, onSuccess }) {
                 <button disabled={loading} className="px-4 py-2 rounded bg-emerald-600 text-white">
                   {loading ? "Creando..." : "Crear cuenta"}
                 </button>
-                <button type="button" className="px-4 py-2 rounded border" onClick={()=>changeMode("login")}>Volver</button>
+                <button type="button" className="px-4 py-2 rounded border" onClick={()=>setMode("login")}>Volver</button>
               </div>
             </form>
           </>
