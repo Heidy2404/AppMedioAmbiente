@@ -1,3 +1,9 @@
+import imagen1 from '../assets/amor.jpg';
+import imagen2 from '../assets/reciclar.jpg';
+import imagen3 from '../assets/reforestar.jpg';
+
+
+
 import { useEffect, useState } from "react";
 
 const slides = [
@@ -5,16 +11,19 @@ const slides = [
     title: "🌍 Protegemos Nuestro Planeta",
     text: "Trabajamos juntos por un futuro sostenible para República Dominicana",
     bg: "from-green-600 to-blue-600",
+    image: imagen1,
   },
   {
     title: "🌱 Conservación y Biodiversidad",
     text: "Preservamos nuestros ecosistemas únicos y especies nativas",
     bg: "from-blue-600 to-green-600",
+    image: imagen2,
   },
   {
     title: "♻️ Educación Ambiental",
     text: "Promovemos la conciencia ecológica en toda la población",
     bg: "from-green-600 to-teal-600",
+    image: imagen3,
   },
 ];
 
@@ -38,6 +47,12 @@ const Slider = () => {
           <div
             key={i}
             className={`min-w-full h-64 flex items-center justify-center text-white bg-gradient-to-r ${slide.bg}`}
+            style={{ 
+              backgroundImage: `url(${slide.image})`, // Imagen como fondo
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundBlendMode: 'multiply' // Mezcla el gradiente con la imagen
+            }}
           >
             <div className="text-center px-4">
               <h2 className="text-3xl font-bold mb-3">{slide.title}</h2>
@@ -47,7 +62,7 @@ const Slider = () => {
         ))}
       </div>
 
-      {/* Botones de control */}
+      {/* Botones de control (se mantienen igual) */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
         {slides.map((_, i) => (
           <button
