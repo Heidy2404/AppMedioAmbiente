@@ -42,7 +42,54 @@ export const api = {
   recover: (correo) =>
     tryPaths(["/auth/recover", "/api/auth/recover"], { method: "POST", body: { correo } }),
   resetPass: (payload) =>
-    tryPaths(["/auth/reset", "/api/auth/reset"], { method: "POST", body: payload }),
+    tryPaths(["/auth/recover", "/api/auth/recover"], { method: "POST", body: payload }),
+  changePassword: async (token, oldPassword, newPassword) => {
+    // Obtener el correo del usuario desde localStorage
+    const userData = localStorage.getItem("mmar_user");
+    const userEmail = userData ? JSON.parse(userData).email : null;
+    
+    if (!userEmail) {
+      throw new Error("No se pudo obtener el correo del usuario");
+    }
+    
+    try {
+      // Paso 1: Solicitar código de recuperación
+      const recoverResponse = await tryPaths(["/auth/recover", "/api/auth/recover"], { 
+        method: "POST", 
+        body: { correo: userEmail } 
+      });
+      
+      // Extraer el código de la respuesta
+      let recoveryCode = null;
+      if (typeof recoverResponse === 'string') {
+        // Si la respuesta es texto, buscar el código (normalmente 6 dígitos)
+        const codeMatch = recoverResponse.match(/\b\d{6}\b/);
+        if (codeMatch) {
+          recoveryCode = codeMatch[0];
+        }
+      } else if (recoverResponse && recoverResponse.codigo) {
+        // Si la respuesta es JSON con campo codigo
+        recoveryCode = recoverResponse.codigo;
+      }
+      
+      if (!recoveryCode) {
+        throw new Error("No se pudo obtener el código de recuperación");
+      }
+      
+      // Paso 2: Usar el código para cambiar la contraseña
+      return await tryPaths(["/auth/reset", "/api/auth/reset"], { 
+        method: "POST", 
+        body: { 
+          correo: userEmail, 
+          codigo: recoveryCode, 
+          nueva_password: newPassword 
+        } 
+      });
+      
+    } catch (error) {
+      throw new Error(`Error al cambiar contraseña: ${error.message}`);
+    }
+  },
 
   // ------- Públicos -------
   getServicios: () => tryPaths(["/servicios", "/api/servicios"]),
