@@ -4,7 +4,7 @@ const MEMBERS = [
   { name: "Cristian Encarnacion",  matricula: "20230936",  phone: "", telegram: "", photo: "" },
   { name: "Luis Espinal",          matricula: "2023-1055", phone: "", telegram: "", photo: "" },
   { name: "Adrian Lorenzo Torres", matricula: "2023-1033", phone: "", telegram: "", photo: "" },
-  { name: "Rainiero Mendoza",      matricula: "2022-1079", phone: "", telegram: "", photo: "" },
+  { name: "Rainiero Mendoza",      matricula: "2022-1079", phone: "8494528607", telegram: "http://t.me/Jesus117229", photo: "/team/rainiero.jpg" },
 ];
 
 const initials = (n) => n.split(" ").filter(Boolean).slice(0,3).map(w=>w[0]?.toUpperCase()).join("");
