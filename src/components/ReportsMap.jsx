@@ -55,7 +55,6 @@ export default function ReportsMap() {
   );
 
   const handleReportClick = async (reportId) => {
-    console.log(reportId)
     if (!token) return;
     
     try {

@@ -24,7 +24,8 @@ export default function AreasMap() {
       <h2 className="text-2xl font-bold mb-3">🧭 Mapa de Áreas Protegidas</h2>
       {loading && <p>Cargando…</p>}
       {err && <p className="text-rose-600">{err}</p>}
-      <div className="h-[70vh] rounded overflow-hidden border">
+      
+      <div className="h-[60vh] rounded overflow-hidden border mb-6">
         <MapContainer center={[18.7357,-70.1627]} zoom={7} className="h-full w-full">
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {areas.map((a,i) => {
@@ -33,14 +34,46 @@ export default function AreasMap() {
             return (
               <Marker key={a.id ?? i} position={[lat, lng]}>
                 <Popup>
-                  <strong>{a.nombre || a.titulo || "Área"}</strong><br/>
-                  {(a.provincia || a.region || "")}
+                  <div className="min-w-[250px]">
+                    <strong className="text-lg text-green-700">{a.nombre || a.titulo || "Área"}</strong><br/>
+                    <p className="text-sm text-gray-600 mt-1">
+                      <span className="font-medium">Tipo:</span> {a.tipo?.replace('_', ' ') || 'N/A'}<br/>
+                      <span className="font-medium">Ubicación:</span> {a.ubicacion || a.provincia || a.region || 'N/A'}<br/>
+                      <span className="font-medium">Área:</span> {a.area_km2 ? `${a.area_km2} km²` : 'N/A'}
+                    </p>
+                    {a.descripcion && (
+                      <p className="text-sm mt-2 text-gray-700">{a.descripcion}</p>
+                    )}
+                  </div>
                 </Popup>
               </Marker>
             );
           })}
         </MapContainer>
       </div>
+
+      {/* Lista de áreas */}
+      {areas.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border p-4">
+          <h3 className="text-lg font-semibold mb-3 text-green-700">📋 Lista de Áreas Protegidas ({areas.length})</h3>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {areas.map((area, i) => (
+              <div key={area.id ?? i} className="p-3 border rounded-lg hover:bg-green-50 transition-colors">
+                <h4 className="font-medium text-green-800">{area.nombre}</h4>
+                <p className="text-sm text-gray-600 mt-1">
+                  <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-2">
+                    {area.tipo?.replace('_', ' ') || 'N/A'}
+                  </span>
+                  {area.ubicacion}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {area.area_km2 ? `${area.area_km2} km²` : ''} • {area.fecha_creacion ? `Creado en ${new Date(area.fecha_creacion).getFullYear()}` : ''}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

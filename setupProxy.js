@@ -5,7 +5,7 @@ module.exports = function (app) {
   app.use(
     [
       // públicos
-      "/servicios", "/noticias", "/videos", "/areas_protegidas",
+      "/servicios", "/noticias", "/videos", "/areas_protegidas", "/areas",
       "/medidas", "/equipo", "/voluntarios",
       // protegidos
       "/normativas", "/reportes", "/usuarios", "/auth",
@@ -17,7 +17,7 @@ module.exports = function (app) {
       changeOrigin: true,
       secure: true,
       // opcional: para ver a dónde se está yendo realmente
-      // logLevel: "debug",
+      logLevel: "debug",
     })
   );
 };
