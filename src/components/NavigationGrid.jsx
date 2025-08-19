@@ -1,7 +1,7 @@
 // src/components/NavigationGrid.jsx
 export default function NavigationGrid({ go }) {
   return (
-    <section className="grid md:grid-cols-4 gap-4">
+    <section className="grid md:grid-cols-4 gap-6 p-6">
       <button onClick={() => go("about")} className="p-6 bg-white rounded-xl shadow hover:shadow-md border">
         <div className="text-3xl mb-2">🏛️</div>
         <div className="font-semibold">Sobre Nosotros</div>
@@ -43,7 +43,7 @@ export default function NavigationGrid({ go }) {
         <div className="font-semibold">Equipo</div>
       </button>
 
-      <button onClick={() => go("volunteer")} className="p-6 bg-white rounded-xl shadow hover:shadow-md border md:col-span-2">
+      <button onClick={() => go("volunteer")} className="p-6 bg-white rounded-xl shadow hover:shadow-md border">
         <div className="text-3xl mb-2">🤝</div>
         <div className="font-semibold">Voluntariado</div>
       </button>
