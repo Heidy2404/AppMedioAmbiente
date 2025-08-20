@@ -1,3 +1,4 @@
+// src/components/AreasMap.jsx
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -9,11 +10,13 @@ import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 L.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
 
 export default function AreasMap() {
-  const [areas, setAreas] = useState([]), [err, setErr] = useState(""), [loading,setLoading]=useState(true);
+  const [areas, setAreas] = useState([]),
+        [err, setErr] = useState(""),
+        [loading,setLoading]=useState(true);
 
   useEffect(() => {
     setLoading(true);
-    api.getAreasProtegidas()
+    api.getAreasProtegidas() // sin filtros; puedes pasar {tipo, busqueda} si quieres
       .then(r => setAreas(Array.isArray(r) ? r : (r?.data ?? [])))
       .catch(e => setErr(e.message || "No se pudieron cargar las áreas."))
       .finally(() => setLoading(false));
@@ -29,17 +32,25 @@ export default function AreasMap() {
         <MapContainer center={[18.7357,-70.1627]} zoom={7} className="h-full w-full">
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {areas.map((a,i) => {
-            const lat = Number(a.latitud ?? a.lat), lng = Number(a.longitud ?? a.lng);
+            const lat = Number(a.latitud), lng = Number(a.longitud);
             if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
             return (
               <Marker key={a.id ?? i} position={[lat, lng]}>
                 <Popup>
-                  <div className="min-w-[250px]">
-                    <strong className="text-lg text-green-700">{a.nombre || a.titulo || "Área"}</strong><br/>
+                  <div className="min-w-[260px]">
+                    {a.imagen && (
+                      <img
+                        src={a.imagen}
+                        alt={a.nombre}
+                        className="w-full h-32 object-cover rounded mb-2"
+                        loading="lazy"
+                      />
+                    )}
+                    <strong className="text-lg text-green-700">{a.nombre || "Área"}</strong><br/>
                     <p className="text-sm text-gray-600 mt-1">
-                      <span className="font-medium">Tipo:</span> {a.tipo?.replace('_', ' ') || 'N/A'}<br/>
-                      <span className="font-medium">Ubicación:</span> {a.ubicacion || a.provincia || a.region || 'N/A'}<br/>
-                      <span className="font-medium">Área:</span> {a.area_km2 ? `${a.area_km2} km²` : 'N/A'}
+                      <span className="font-medium">Tipo:</span> {a.tipo?.replaceAll('_', ' ') || 'N/A'}<br/>
+                      <span className="font-medium">Ubicación:</span> {a.ubicacion || 'N/A'}<br/>
+                      <span className="font-medium">Superficie:</span> {a.superficie || 'N/D'}
                     </p>
                     {a.descripcion && (
                       <p className="text-sm mt-2 text-gray-700">{a.descripcion}</p>
@@ -62,12 +73,12 @@ export default function AreasMap() {
                 <h4 className="font-medium text-green-800">{area.nombre}</h4>
                 <p className="text-sm text-gray-600 mt-1">
                   <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-2">
-                    {area.tipo?.replace('_', ' ') || 'N/A'}
+                    {area.tipo?.replaceAll('_', ' ') || 'N/A'}
                   </span>
                   {area.ubicacion}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  {area.area_km2 ? `${area.area_km2} km²` : ''} • {area.fecha_creacion ? `Creado en ${new Date(area.fecha_creacion).getFullYear()}` : ''}
+                  {area.superficie ? `Superficie: ${area.superficie}` : ''}
                 </p>
               </div>
             ))}

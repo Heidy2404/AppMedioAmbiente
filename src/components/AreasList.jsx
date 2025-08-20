@@ -1,3 +1,4 @@
+// src/components/AreasList.jsx
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
 
@@ -13,37 +14,28 @@ export default function AreasList() {
 
   // Detectar si es vista móvil
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobileView(window.innerWidth < 768);
-    };
-    
+    const checkMobile = () => setIsMobileView(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Cargar datos desde la API usando tu servicio
+  // Cargar datos desde la API real
   useEffect(() => {
     const fetchAreas = async () => {
       try {
         setLoading(true);
-        // Usar directamente getAreasProtegidas que contiene los datos
-        const areasData = await api.getAreasProtegidas();
-        setAreas(areasData);
-        
-        // Extraer tipos únicos para el filtro
-        const tiposUnicos = [...new Set(areasData.map(area => area.tipo))];
+        const areasData = await api.getAreasProtegidas(); // puedes pasar {tipo, busqueda}
+        setAreas(Array.isArray(areasData) ? areasData : (areasData?.data ?? []));
+        const tiposUnicos = [...new Set((areasData || []).map(a => a.tipo).filter(Boolean))];
         setTiposDisponibles(tiposUnicos);
-        
       } catch (error) {
         console.error("Error fetching data:", error);
-        setErr("Error cargando datos: " + error.message);
+        setErr("Error cargando datos: " + (error.message || "desconocido"));
       } finally {
         setLoading(false);
       }
     };
-
     fetchAreas();
   }, []);
 
@@ -54,17 +46,13 @@ export default function AreasList() {
     return coincideTexto && coincideTipo;
   });
 
-  // Función para cerrar detalles en móvil
-  const closeDetails = () => {
-    setSel(null);
-  };
+  // Cerrar detalles en móvil
+  const closeDetails = () => setSel(null);
 
   return (
     <section className="p-4 max-w-7xl mx-auto bg-gradient-to-b from-green-50 to-white min-h-screen">
       <div className="text-center mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-green-800 mb-2">
-          🗺️ Áreas Protegidas
-        </h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-green-800 mb-2">🗺️ Áreas Protegidas</h2>
         <p className="text-gray-600">República Dominicana</p>
       </div>
       
@@ -76,15 +64,15 @@ export default function AreasList() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </span>
-          <input 
-            className="pl-10 w-full border-2 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-200 bg-white shadow-sm" 
-            placeholder="Buscar por nombre, ubicación..." 
-            value={q} 
-            onChange={e => setQ(e.target.value)} 
+          <input
+            className="pl-10 w-full border-2 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-200 bg-white shadow-sm"
+            placeholder="Buscar por nombre, ubicación..."
+            value={q}
+            onChange={e => setQ(e.target.value)}
           />
         </div>
         
-        <select 
+        <select
           className="w-full border-2 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-200 bg-white shadow-sm"
           value={tipoFiltro}
           onChange={e => setTipoFiltro(e.target.value)}
@@ -92,7 +80,7 @@ export default function AreasList() {
           <option value="">Todos los tipos de áreas</option>
           {tiposDisponibles.map((tipo, index) => (
             <option key={index} value={tipo}>
-              {tipo.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+              {tipo.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
             </option>
           ))}
         </select>
@@ -118,16 +106,16 @@ export default function AreasList() {
         </div>
       ) : (
         <>
-          {/* Vista para móviles */}
+          {/* Vista móvil */}
           {isMobileView ? (
             <div className="space-y-4">
               {sel ? (
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                  {sel.imagen && (
+                    <img src={sel.imagen} alt={sel.nombre} className="w-full h-48 object-cover" loading="lazy" />
+                  )}
                   <div className="bg-green-600 p-4">
-                    <button 
-                      onClick={closeDetails}
-                      className="mb-2 flex items-center text-white font-medium"
-                    >
+                    <button onClick={closeDetails} className="mb-2 flex items-center text-white font-medium">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
                       </svg>
@@ -136,21 +124,18 @@ export default function AreasList() {
                     <h3 className="text-2xl font-bold text-white mb-2">{sel.nombre}</h3>
                     <div className="flex flex-wrap gap-2">
                       <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                        {sel.tipo.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                        {sel.tipo.split('_').map(w => w[0].toUpperCase()+w.slice(1)).join(' ')}
                       </span>
+                      {sel.superficie && (
+                        <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                          {sel.superficie}
+                        </span>
+                      )}
                     </div>
                   </div>
                   
                   <div className="p-4 space-y-4">
-                    <div className="flex items-center gap-2 text-green-700 bg-green-50 p-3 rounded-lg">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                      </svg>
-                      <span className="font-medium">{sel.area_km2} km²</span>
-                    </div>
-                    
                     <p className="text-gray-700 leading-relaxed">{sel.descripcion}</p>
-                    
                     <div className="border-t pt-4">
                       <h4 className="font-semibold text-green-700 flex items-center gap-2 mb-2">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,12 +146,7 @@ export default function AreasList() {
                       </h4>
                       <p className="text-gray-600">{sel.ubicacion}</p>
                       {(sel.latitud || sel.longitud) && (
-                        <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                          </svg>
-                          {sel.latitud}, {sel.longitud}
-                        </p>
+                        <p className="text-sm text-gray-500 mt-2">Coordenadas: {sel.latitud}, {sel.longitud}</p>
                       )}
                     </div>
                   </div>
@@ -184,15 +164,15 @@ export default function AreasList() {
                     </div>
                   ) : (
                     filtered.map((a) => (
-                      <div 
-                        key={a.id} 
+                      <div
+                        key={a.id}
                         onClick={() => setSel(a)}
                         className="bg-white rounded-xl shadow-sm p-4 active:scale-98 transition-transform cursor-pointer border-2 border-transparent hover:border-green-500"
                       >
                         <h3 className="text-lg font-semibold text-green-800 mb-2">{a.nombre}</h3>
                         <div className="flex flex-wrap items-center gap-2 text-sm">
                           <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">
-                            {a.tipo.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                            {a.tipo.split('_').map(w => w[0].toUpperCase()+w.slice(1)).join(' ')}
                           </span>
                           <span className="text-gray-600 flex items-center gap-1">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +188,7 @@ export default function AreasList() {
               )}
             </div>
           ) : (
-            /* Vista para escritorio */
+            /* Vista escritorio */
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-lg p-4">
                 <h3 className="text-lg font-semibold text-green-800 mb-4 px-2">Lista de Áreas</h3>
@@ -224,8 +204,8 @@ export default function AreasList() {
                     </div>
                   ) : (
                     filtered.map((a) => (
-                      <div 
-                        key={a.id} 
+                      <div
+                        key={a.id}
                         onClick={() => setSel(a)}
                         className={`p-4 rounded-xl cursor-pointer transition-all duration-200 ${
                           sel?.id === a.id 
@@ -236,7 +216,7 @@ export default function AreasList() {
                         <h3 className="font-semibold text-green-800 mb-2">{a.nombre}</h3>
                         <div className="flex flex-wrap items-center gap-2 text-sm">
                           <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">
-                            {a.tipo.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                            {a.tipo.split('_').map(w => w[0].toUpperCase()+w.slice(1)).join(' ')}
                           </span>
                           <span className="text-gray-600 flex items-center gap-1">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,21 +234,25 @@ export default function AreasList() {
               <div className="sticky top-4">
                 {sel ? (
                   <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    {sel.imagen && (
+                      <img src={sel.imagen} alt={sel.nombre} className="w-full h-60 object-cover" loading="lazy" />
+                    )}
                     <div className="bg-green-600 p-6">
                       <h3 className="text-2xl font-bold text-white mb-3">{sel.nombre}</h3>
                       <div className="flex flex-wrap gap-2">
                         <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                          {sel.tipo.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                          {sel.tipo.split('_').map(w => w[0].toUpperCase()+w.slice(1)).join(' ')}
                         </span>
-                        <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                          {sel.area_km2} km²
-                        </span>
+                        {sel.superficie && (
+                          <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                            {sel.superficie}
+                          </span>
+                        )}
                       </div>
                     </div>
                     
                     <div className="p-6 space-y-6">
                       <p className="text-gray-700 leading-relaxed">{sel.descripcion}</p>
-                      
                       <div className="border-t pt-6">
                         <h4 className="font-semibold text-green-700 flex items-center gap-2 mb-3">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,10 +263,7 @@ export default function AreasList() {
                         </h4>
                         <p className="text-gray-600">{sel.ubicacion}</p>
                         {(sel.latitud || sel.longitud) && (
-                          <div className="mt-3 p-3 bg-gray-50 rounded-lg text-sm text-gray-600 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                            </svg>
+                          <div className="mt-3 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
                             Coordenadas: {sel.latitud}, {sel.longitud}
                           </div>
                         )}
